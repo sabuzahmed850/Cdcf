@@ -1,0 +1,221 @@
+// Har Har Mahadev
+#include<bits/stdc++.h>
+using namespace std;
+
+struct input_checker {
+    string buffer;
+    int pos;
+
+    const string all = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const string number = "0123456789";
+    const string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const string lower = "abcdefghijklmnopqrstuvwxyz";
+
+    input_checker() {
+        pos = 0;
+        while (true) {
+            int c = cin.get();
+            if (c == -1) {
+                break;
+            }
+            buffer.push_back((char) c);
+        }
+    }
+
+    int nextDelimiter() {
+        int now = pos;
+        while (now < (int) buffer.size() && !isspace(buffer[now])) {
+            now++;
+        }
+        return now;
+    }
+
+    string readOne() {
+        assert(pos < (int) buffer.size());
+        int nxt = nextDelimiter();
+        string res;
+        while (pos < nxt) {
+            res += buffer[pos];
+            pos++;
+        }
+        return res;
+    }
+
+    string readString(int minl, int maxl, const string &pattern = "") {
+        assert(minl <= maxl);
+        string res = readOne();
+        assert(minl <= (int) res.size());
+        assert((int) res.size() <= maxl);
+        for (int i = 0; i < (int) res.size(); i++) {
+            assert(pattern.empty() || pattern.find(res[i]) != string::npos);
+        }
+        return res;
+    }
+
+    int readInt(int minv, int maxv) {
+        assert(minv <= maxv);
+        int res = stoi(readOne());
+        assert(minv <= res);
+        assert(res <= maxv);
+        return res;
+    }
+
+    long long readLong(long long minv, long long maxv) {
+        assert(minv <= maxv);
+        long long res = stoll(readOne());
+        assert(minv <= res);
+        assert(res <= maxv);
+        return res;
+    }
+
+    auto readInts(int n, int minv, int maxv) {
+        assert(n >= 0);
+        vector<int> v(n);
+        for (int i = 0; i < n; ++i) {
+            v[i] = readInt(minv, maxv);
+            if (i+1 < n) readSpace();
+        }
+        return v;
+    }
+
+    auto readLongs(int n, long long minv, long long maxv) {
+        assert(n >= 0);
+        vector<long long> v(n);
+        for (int i = 0; i < n; ++i) {
+            v[i] = readLong(minv, maxv);
+            if (i+1 < n) readSpace();
+        }
+        return v;
+    }
+
+    void readSpace() {
+        assert((int) buffer.size() > pos);
+        assert(buffer[pos] == ' ');
+        pos++;
+    }
+
+    void readEoln() {
+        assert((int) buffer.size() > pos);
+        assert(buffer[pos] == '\n');
+        pos++;
+    }
+
+    void readEof() {
+        assert((int) buffer.size() == pos);
+    }
+}inp;
+
+long long smn = 0;
+long long smq = 0;
+
+
+ 
+void solve()
+{
+    int n = inp.readInt(1,100000);
+    inp.readEoln();
+    vector<int> a(n);
+    for(int i = 0;i < n;i++){
+        a[i] = inp.readInt(0,1);
+        if(i == n-1)inp.readEoln();
+        else inp.readSpace();
+    }
+    int q = inp.readInt(1,100000);
+    inp.readEoln();
+    smn += n;
+    smq += q;
+    set<int> so,se;
+    for(int i = 1;i < n;i+=2){
+        so.insert(i);
+    }
+    for(int i = 0;i < n;i++){
+        if(a[i] == 0)continue;
+        if(i&1){
+            so.erase(i);
+        }
+        else{
+            se.insert(i);
+        }
+    }
+
+    for(int i = 0;i < q;i++){
+        int p,x;
+        p = inp.readInt(1,n);
+        inp.readSpace();
+        x = inp.readInt(0,1);
+        inp.readEoln();
+        p--;
+        a[p] = x;
+        if(p&1){
+            so.insert(p);
+            if(a[p])so.erase(p);
+        }
+        else{
+            se.erase(p);
+            if(a[p])se.insert(p);
+        }
+        if(se.size() == 0){
+            cout << 0 << "\n";
+            continue;
+        }
+        if(so.size() == 0){
+            cout << 1 << "\n";
+            continue;
+        }
+        auto it = se.end();
+        it--;
+        auto gt = so.end();
+        gt--;
+        int e = (*it);
+        int o = (*gt);
+        if(e > o)cout << 1 << '\n';
+        else cout << 0 << '\n';
+
+    }
+}
+
+signed main(){
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+    #ifdef NCR
+        init();
+    #endif
+    #ifdef SIEVE
+        sieve();
+    #endif
+    int t;
+    // cin >> t;
+    t = inp.readInt(1,100'000);
+    inp.readEoln();
+    while(t--)
+        solve();
+    inp.readEof();
+    assert(smn <= 100'000);
+    assert(smq <= 100'000);
+    return 0;
+}
+
+/*input :
+2
+4
+0 0 0 1
+3
+1 1
+2 1
+3 1
+3
+0 1 0
+2
+1 1
+2 0
+
+output:
+0
+1
+1
+1
+0
+
+
+*/
